@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 
 const mongoose = require('mongoose');
 
+const userRoutes = require('./routes/user');
+
 //gérer la demande POST
 app.use(bodyParser.json());
 
@@ -24,8 +26,6 @@ app.use((req, res, next) => {
   });
 
 
-app.use((req, res) => {
-   res.json({ message: 'Votre requête a bien été reçue !' }); 
-});
+  app.use('/api/auth', userRoutes);
 
 module.exports = app;
