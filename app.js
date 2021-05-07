@@ -4,17 +4,19 @@ const app = express();
 const bodyParser = require('body-parser');
 
 const mongoose = require('mongoose');
-
+const morgan = require('morgan');
+const fs = require('fs');
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce');
 
 const path = require('path');
+require('dotenv').config();//Variable d'envirenement
 
 //gérer la demande POST
 app.use(bodyParser.json());
 
 //Connectez  API au cluster MongoDB
-mongoose.connect('mongodb+srv://willo:IMFtjG05S6u8nDGq@cluster0.gho0r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect(process.env.BD,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -27,6 +29,13 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
   });
+
+// Log toutes les requêtes passées au serveur (sécurité)
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }));
+
+
+//Les routes
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
