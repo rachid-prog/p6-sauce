@@ -12,6 +12,8 @@ const sauceRoutes = require('./routes/sauce');
 const path = require('path');
 require('dotenv').config();//Variable d'envirenement
 
+const helmet = require('helmet');
+
 //gérer la demande POST
 app.use(bodyParser.json());
 
@@ -29,6 +31,9 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
   });
+
+// Sécurise les headers
+app.use(helmet());
 
 // Log toutes les requêtes passées au serveur (sécurité)
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
